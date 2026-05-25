@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4M Change Management System — Interactive UI Sandbox</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --primary: #185FA5;
+      --primary-light: #E6F1FB;
+      --bg-panel: #ffffff;
+      --bg-app: #f0f2f5;
+      --bg-hover: #f4f7fa;
+      --text-main: #1a1c1e;
+      --text-muted: #5e6266;
+      --text-ghost: #8c9094;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-color-dark: rgba(0, 0, 0, 0.15);
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --mono-family: 'Space Mono', monospace;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 20px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Navigation bar */
+    .topbar {
+      height: 64px;
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      color: white;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      font-family: var(--mono-family);
+      box-shadow: 0 3px 8px rgba(24, 95, 165, 0.25);
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .brand-tag {
+      background-color: var(--primary-light);
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .topbar-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Main Workspace Layout */
+    .workspace {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 340px;
+      background-color: var(--bg-panel);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-input-wrapper i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-ghost);
+      font-size: 16px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px 10px 36px;
+      border: 1px solid var(--border-color-dark);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-family);
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+      background-color: var(--bg-hover);
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      background-color: var(--bg-panel);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .screen-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid transparent;
+      user-select: none;
+    }
+
+    .screen-item:hover {
+      background-color: var(--bg-hover);
+    }
+
+    .screen-item.active {
+      background-color: var(--primary-light);
+      border-color: rgba(24, 95, 165, 0.12);
+    }
+
+    .screen-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background-color: var(--bg-hover);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      border: 0.5px solid var(--border-color);
+    }
+
+    .screen-item.active .screen-icon {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .screen-details {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .screen-number {
+      font-family: var(--mono-family);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-ghost);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .screen-item.active .screen-number {
+      color: var(--primary);
+    }
+
+    .screen-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .screen-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Viewport Styles */
+    .viewport-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      height: 100%;
+    }
+
+    /* Viewport Toolbar */
+    .viewport-toolbar {
+      height: 56px;
+      background-color: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.01);
+    }
+
+    .toolbar-left, .toolbar-right, .toolbar-center {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-group {
+      display: flex;
+      background-color: var(--bg-hover);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .toolbar-btn {
+      background: none;
+      border: none;
+      padding: 6px 12px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+      color: var(--text-main);
+    }
+
+    .toolbar-btn.active {
+      background-color: var(--bg-panel);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      font-weight: 600;
+    }
+
+    .action-btn {
+      background-color: var(--bg-panel);
+      border: 1px solid var(--border-color-dark);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      height: 32px;
+      font-family: var(--font-family);
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-main);
+    }
+
+    .action-btn.primary {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .action-btn.primary:hover {
+      background-color: #134e89;
+      border-color: #134e89;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .viewport-divider {
+      width: 1px;
+      height: 20px;
+      background-color: var(--border-color);
+      margin: 0 4px;
+    }
+
+    /* Device Preview Panel */
+    .preview-area {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      overflow: auto;
+      position: relative;
+    }
+
+    .preview-frame-wrapper {
+      background-color: var(--bg-panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-color-dark);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      height: 100%;
+      width: 100%;
+      max-height: 100%;
+      max-width: 100%;
+    }
+
+    .frame-header {
+      background-color: var(--bg-hover);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--mono-family);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .frame-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .frame-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #ddd;
+    }
+
+    .frame-dot:nth-child(1) { background-color: #ff5f56; }
+    .frame-dot:nth-child(2) { background-color: #ffbd2e; }
+    .frame-dot:nth-child(3) { background-color: #27c93f; }
+
+    .frame-title {
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .frame-dimensions {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .preview-iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      background-color: white;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Stacked View Mode */
+    .stacked-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px;
+      display: none;
+      flex-direction: column;
+      gap: 40px;
+      background-color: var(--bg-app);
+    }
+
+    .stacked-screen-card {
+      background-color: var(--bg-panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      transition: transform 0.2s ease;
+    }
+
+    .stacked-screen-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .stacked-screen-header {
+      background-color: var(--bg-hover);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .stacked-screen-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-family: var(--mono-family);
+    }
+
+    .stacked-screen-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-left: 12px;
+    }
+
+    .stacked-screen-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Portal Footer */
+    .portal-footer {
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-ghost);
+      font-family: var(--mono-family);
+      border-top: 1px solid var(--border-color);
+      background-color: var(--bg-panel);
+      flex-shrink: 0;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      display: inline-block;
+      margin-right: 4px;
+      box-shadow: 0 0 8px var(--primary);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Top header -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <div class="brand-logo">4M</div>
+      <div class="brand-title-wrap">
+        <span class="brand-title">Change Management System</span>
+        <span class="brand-subtitle">Interactive UI Blueprint Sandbox</span>
+      </div>
+      <span class="brand-tag">8 Screens</span>
+    </div>
+    <div class="topbar-meta">
+      <a href="style.css" class="topbar-link" target="_blank">
+        <i class="ti ti-code"></i> View Shared CSS (style.css)
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="workspace">
+    <!-- Sidebar: Screen Selection -->
+    <section class="sidebar">
+      <div class="sidebar-search">
+        <div class="search-input-wrapper">
+          <i class="ti ti-search"></i>
+          <input type="text" id="search-box" class="search-input" placeholder="Search screens..." oninput="filterScreens()" />
+        </div>
+      </div>
+      <div class="sidebar-list" id="sidebar-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- Content Viewport -->
+    <section class="viewport-container">
+      <!-- Toolbar -->
+      <div class="viewport-toolbar">
+        <div class="toolbar-left">
+          <div class="btn-group">
+            <button id="mode-single-btn" class="toolbar-btn active" onclick="setViewMode('single')">
+              <i class="ti ti-device-laptop"></i> Single Screen
+            </button>
+            <button id="mode-all-btn" class="toolbar-btn" onclick="setViewMode('all')">
+              <i class="ti ti-layout-grid"></i> All Screens Stacked
+            </button>
+          </div>
+        </div>
+
+        <div class="toolbar-center" id="device-controls">
+          <div class="btn-group">
+            <button class="toolbar-btn active" data-size="desktop" onclick="setDeviceSize('desktop')">
+              <i class="ti ti-device-desktop"></i> Desktop (Fit)
+            </button>
+            <button class="toolbar-btn" data-size="laptop" onclick="setDeviceSize('laptop')">
+              <i class="ti ti-device-laptop"></i> Laptop (1280px)
+            </button>
+            <button class="toolbar-btn" data-size="tablet" onclick="setDeviceSize('tablet')">
+              <i class="ti ti-device-tablet"></i> Tablet (768px)
+            </button>
+            <button class="toolbar-btn" data-size="mobile" onclick="setDeviceSize('mobile')">
+              <i class="ti ti-device-mobile"></i> Mobile (375px)
+            </button>
+          </div>
+          <button class="action-btn" id="rotate-btn" onclick="toggleOrientation()" title="Rotate Device" disabled>
+            <i class="ti ti-rotate-clockwise"></i>
+          </button>
+        </div>
+
+        <div class="toolbar-right">
+          <button class="action-btn" onclick="reloadActiveFrame()" title="Refresh Frame">
+            <i class="ti ti-refresh"></i>
+          </button>
+          <button class="action-btn primary" id="open-btn" onclick="openActiveStandalone()" title="Open Standalone page in new tab">
+            <i class="ti ti-external-link"></i> Open Standalone
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview Area (Single Screen) -->
+      <div class="preview-area" id="preview-area">
+        <div class="preview-frame-wrapper" id="preview-frame-wrapper">
+          <div class="frame-header">
+            <div class="frame-dots">
+              <span class="frame-dot"></span>
+              <span class="frame-dot"></span>
+              <span class="frame-dot"></span>
+            </div>
+            <span class="frame-title" id="frame-title">Login — Role-based Sign In</span>
+            <span class="frame-dimensions" id="frame-dimensions">Desktop (Fit)</span>
+          </div>
+          <iframe id="preview-iframe" class="preview-iframe" src="about:blank"></iframe>
+        </div>
+      </div>
+
+      <!-- Stacked Scroll Area (All Screens) -->
+      <div class="stacked-area" id="stacked-area">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="portal-footer">
+    <span><span class="pulse-dot"></span>4M Change Management System · UI Design Blueprint · Prepared for Plant A · May 2026</span>
+  </footer>
+
+  <script>
+    // List of screens matching exact files
+    const screens = [
+      {
+        id: "login",
+        num: "Screen 01",
+        name: "Login — Role-based Sign In",
+        file: "login.html",
+        icon: "ti-login",
+        desc: "Role selection and plant authorization",
+        tags: ["Form", "Identity"]
+      },
+      {
+        id: "dashboard",
+        num: "Screen 02",
+        name: "Management Dashboard",
+        file: "dashboard.html",
+        icon: "ti-layout-dashboard",
+        desc: "KPIs, department/process analytics and charts",
+        tags: ["Dashboard", "Charts"]
+      },
+      {
+        id: "new-request",
+        num: "Screen 03",
+        name: "L1",
+        file: "new-request.html",
+        icon: "ti-file-plus",
+        desc: "Multi-step request wizard with 4M categorization",
+        tags: ["Form", "Wizard"]
+      },
+      {
+        id: "approval",
+        num: "Screen 04",
+        name: "L2",
+        file: "approval.html",
+        icon: "ti-checks",
+        desc: "L2/L3 HOD approval chain and validation logs",
+        tags: ["Workflow", "HOD"]
+      },
+      {
+        id: "tracker",
+        num: "Screen 05",
+        name: "L3",
+        file: "tracker.html",
+        icon: "ti-list-check",
+        desc: "All requests list with status chips and search filters",
+        tags: ["Table", "Search"]
+      },
+      {
+        id: "effectiveness",
+        num: "Screen 06",
+        name: "Effectiveness",
+        file: "effectiveness.html",
+        icon: "ti-chart-line",
+        desc: "3-Month QA post-implementation observation logs",
+        tags: ["Log", "QA"]
+      },
+      {
+        id: "audit-log",
+        num: "Screen 07",
+        name: "Account creation",
+        file: "audit-log.html",
+        icon: "ti-shield-check",
+        desc: "Immutable change action trails and timeline audits",
+        tags: ["Timeline", "Security"]
+      },
+      {
+        id: "reports",
+        num: "Screen 08",
+        name: "Reports & Exports",
+        file: "reports.html",
+        icon: "ti-report",
+        desc: "Statistical charts, avg approval times, export options",
+        tags: ["Report", "Export"]
+      } , {
+        id: "user-creation",
+        num: "Screen 09",
+        name: "User Account Creation",
+        file: "user-creation.html",
+        icon: "ti-user-plus",
+        desc: "Creation, Approval and Rejection of User Account Creation",
+        tags: ["Log", "QA"]
+      },
+    ];
+
+    let activeScreen = screens[0];
+    let viewMode = 'single'; // 'single' or 'all'
+    let deviceSize = 'desktop'; // 'desktop', 'laptop', 'tablet', 'mobile'
+    let isLandscape = false;
+
+    // Dimensions Map
+    const deviceDimensions = {
+      desktop: { w: '100%', h: '100%', label: 'Desktop (Fit)' },
+      laptop: { w: '1280px', h: '768px', label: 'Laptop (1280x768)' },
+      tablet: { w: '768px', h: '1024px', label: 'Tablet (768x1024)' },
+      mobile: { w: '375px', h: '667px', label: 'Mobile (375x667)' }
+    };
+
+    // Render screen list in sidebar
+    function renderSidebar() {
+      const listContainer = document.getElementById('sidebar-list');
+      listContainer.innerHTML = '';
+      
+      screens.forEach(screen => {
+        const item = document.createElement('div');
+        item.className = `screen-item ${screen.id === activeScreen.id ? 'active' : ''}`;
+        item.onclick = () => selectScreen(screen);
+        
+        item.innerHTML = `
+          <div class="screen-icon">
+            <i class="ti ${screen.icon}"></i>
+          </div>
+          <div class="screen-details">
+            <div class="screen-number">${screen.num}</div>
+            <div class="screen-name">${screen.name}</div>
+            <div class="screen-desc">${screen.desc}</div>
+          </div>
+        `;
+        listContainer.appendChild(item);
+      });
+    }
+
+    // Filter screens from search input
+    function filterScreens() {
+      const query = document.getElementById('search-box').value.toLowerCase();
+      const items = document.querySelectorAll('.screen-item');
+      
+      screens.forEach((screen, index) => {
+        const matches = screen.name.toLowerCase().includes(query) || 
+                        screen.num.toLowerCase().includes(query) || 
+                        screen.desc.toLowerCase().includes(query) ||
+                        screen.tags.some(tag => tag.toLowerCase().includes(query));
+        
+        items[index].style.display = matches ? 'flex' : 'none';
+      });
+    }
+
+    // Select active screen
+    function selectScreen(screen) {
+      if (viewMode === 'all') {
+        // Switch to single screen view mode
+        setViewMode('single');
+      }
+      activeScreen = screen;
+      renderSidebar();
+      
+      // Update iframe source
+      const iframe = document.getElementById('preview-iframe');
+      iframe.style.opacity = '0';
+      setTimeout(() => {
+        iframe.src = screen.file;
+        iframe.onload = () => { iframe.style.opacity = '1'; };
+      }, 150);
+
+      // Update frame title
+      document.getElementById('frame-title').innerText = `${screen.num} — ${screen.name}`;
+      updateDimensionLabel();
+    }
+
+    // Set preview orientation
+    function toggleOrientation() {
+      if (deviceSize === 'desktop' || deviceSize === 'laptop') return;
+      isLandscape = !isLandscape;
+      applyDeviceSize();
+    }
+
+    // Set viewport dimensions
+    function setDeviceSize(size) {
+      deviceSize = size;
+      
+      // Update UI active buttons
+      const buttons = document.querySelectorAll('#device-controls .toolbar-btn');
+      buttons.forEach(btn => {
+        if (btn.getAttribute('data-size') === size) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Enable/disable rotation
+      const rotateBtn = document.getElementById('rotate-btn');
+      if (size === 'tablet' || size === 'mobile') {
+        rotateBtn.disabled = false;
+      } else {
+        rotateBtn.disabled = true;
+        isLandscape = false;
+      }
+
+      applyDeviceSize();
+    }
+
+    // Apply dimensions to preview element
+    function applyDeviceSize() {
+      const wrapper = document.getElementById('preview-frame-wrapper');
+      const dimensions = deviceDimensions[deviceSize];
+      
+      if (deviceSize === 'desktop') {
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+        wrapper.style.borderRadius = 'var(--radius-lg)';
+      } else {
+        let width = dimensions.w;
+        let height = dimensions.h;
+        
+        if (isLandscape) {
+          width = dimensions.h;
+          height = dimensions.w;
+        }
+        
+        wrapper.style.width = width;
+        wrapper.style.height = height;
+        wrapper.style.borderRadius = '14px';
+      }
+      
+      updateDimensionLabel();
+    }
+
+    // Update dimensions text in bar
+    function updateDimensionLabel() {
+      const labelElement = document.getElementById('frame-dimensions');
+      const dimensions = deviceDimensions[deviceSize];
+      
+      if (deviceSize === 'desktop') {
+        labelElement.innerText = dimensions.label;
+      } else {
+        let w = dimensions.w;
+        let h = dimensions.h;
+        if (isLandscape) {
+          w = dimensions.h;
+          h = dimensions.w;
+        }
+        labelElement.innerText = `${deviceSize.charAt(0).toUpperCase() + deviceSize.slice(1)} (${w} x ${h}) ${isLandscape ? 'Landscape' : 'Portrait'}`;
+      }
+    }
+
+    // Toggle view mode: Single or Stacked
+    function setViewMode(mode) {
+      viewMode = mode;
+      
+      const singleBtn = document.getElementById('mode-single-btn');
+      const allBtn = document.getElementById('mode-all-btn');
+      const previewArea = document.getElementById('preview-area');
+      const stackedArea = document.getElementById('stacked-area');
+      const deviceControls = document.getElementById('device-controls');
+      const openBtn = document.getElementById('open-btn');
+
+      if (mode === 'single') {
+        singleBtn.classList.add('active');
+        allBtn.classList.remove('active');
+        previewArea.style.display = 'flex';
+        stackedArea.style.display = 'none';
+        deviceControls.style.opacity = '1';
+        deviceControls.style.pointerEvents = 'all';
+        openBtn.disabled = false;
+        
+        // Reload single screen
+        selectScreen(activeScreen);
+      } else {
+        singleBtn.classList.remove('active');
+        allBtn.classList.add('active');
+        previewArea.style.display = 'none';
+        stackedArea.style.display = 'flex';
+        deviceControls.style.opacity = '0.3';
+        deviceControls.style.pointerEvents = 'none';
+        openBtn.disabled = true;
+
+        renderStackedScreens();
+      }
+    }
+
+    // Render all screens stacked in All Screens mode
+    function renderStackedScreens() {
+      const container = document.getElementById('stacked-area');
+      container.innerHTML = '';
+      
+      screens.forEach(screen => {
+        const card = document.createElement('div');
+        card.className = 'stacked-screen-card';
+        
+        card.innerHTML = `
+          <div class="stacked-screen-header">
+            <div>
+              <span class="stacked-screen-title">${screen.num}</span>
+              <span class="stacked-screen-name">${screen.name}</span>
+            </div>
+            <div class="stacked-screen-actions">
+              <button class="action-btn" onclick="window.open('${screen.file}', '_blank')">
+                <i class="ti ti-external-link"></i> Standalone
+              </button>
+            </div>
+          </div>
+          <iframe class="preview-iframe" src="${screen.file}"></iframe>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Reload active iframe
+    function reloadActiveFrame() {
+      if (viewMode === 'single') {
+        const iframe = document.getElementById('preview-iframe');
+        iframe.src = iframe.src;
+      } else {
+        const iframes = document.querySelectorAll('.stacked-screen-card iframe');
+        iframes.forEach(iframe => {
+          iframe.src = iframe.src;
+        });
+      }
+    }
+
+    // Open active screen standalone in a new tab
+    function openActiveStandalone() {
+      if (viewMode === 'single') {
+        window.open(activeScreen.file, '_blank');
+      }
+    }
+
+    // Initialize Page
+    document.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      selectScreen(screens[0]);
+    });
+  </script>
+</body>
+</html>
