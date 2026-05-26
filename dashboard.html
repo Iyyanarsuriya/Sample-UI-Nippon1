@@ -110,7 +110,7 @@
               <span style="font-size: 12px; font-weight: 600; color: var(--text);">Notifications</span>
               <span onclick="clearNotif(event)" style="font-size: 10px; color: var(--accent); cursor: pointer; font-weight: 500;">Mark read</span>
             </div>
-            <div style="display: flex; gap: 8px; align-items: flex-start; padding: 6px 0;">
+            <div style="display: flex; gap: 8px; align-items: flex-start; padding: 6px; cursor: pointer; border-radius: var(--rad); transition: background 0.15s;" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background='var(--bg)'" onclick="window.location.href='notifications.html'">
               <div style="background: var(--accent-light); color: var(--accent); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <i class="ti ti-file-plus" style="font-size: 14px;"></i>
               </div>
